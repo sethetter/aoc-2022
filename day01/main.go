@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -15,8 +16,12 @@ func main() {
 	}
 
 	counts := calorieCounts(string(input))
-	most := mostCalories(counts)
-	fmt.Printf("part 1: %d\n", most)
+	sort.Sort(sort.Reverse(sort.IntSlice(counts)))
+
+	fmt.Printf("part 1: %d\n", counts[0])
+
+	part2 := counts[0] + counts[1] + counts[2]
+	fmt.Printf("part 2: %d\n", part2)
 }
 
 func calorieCounts(input string) []int {
@@ -39,14 +44,4 @@ func calorieCounts(input string) []int {
 	}
 
 	return counts
-}
-
-func mostCalories(counts []int) int {
-	m := 0
-	for _, c := range counts {
-		if c > m {
-			m = c
-		}
-	}
-	return m
 }
