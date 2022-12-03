@@ -13,7 +13,8 @@ func main() {
 		log.Fatal("failed to read input file")
 	}
 
-	fmt.Println(calculateScore(string(input), win_p2))
+	fmt.Println(calculateScore(string(input)))
+	fmt.Println(calculateScore2(string(input)))
 }
 
 type play int
@@ -45,37 +46,37 @@ func letterToPlay(l string) play {
 type result int
 
 const (
-	win_p1 result = iota
-	win_p2
+	win result = iota
+	lose
 	draw
 )
 
-func whoWon(p1, p2 play) result {
-	if p1 == p2 {
+func whoWon(mine, opponent play) result {
+	if mine == opponent {
 		return draw
 	}
 
-	switch p1 {
+	switch mine {
 	case rock:
-		switch p2 {
+		switch opponent {
 		case paper:
-			return win_p2
+			return lose
 		case scissors:
-			return win_p1
+			return win
 		}
 	case paper:
-		switch p2 {
+		switch opponent {
 		case rock:
-			return win_p1
+			return win
 		case scissors:
-			return win_p2
+			return lose
 		}
 	case scissors:
-		switch p2 {
+		switch opponent {
 		case rock:
-			return win_p2
+			return lose
 		case paper:
-			return win_p1
+			return win
 		}
 	}
 	panic("unreachable")
@@ -93,23 +94,18 @@ func scoreForPlay(p play) int {
 	panic("unexpected play")
 }
 
-func calculateScore(strategy string, player result) int {
+func calculateScore(strategy string) int {
 	rounds := strings.Split(strings.TrimSpace(strategy), "\n")
 
 	score := 0
 	for _, round := range rounds {
 		plays := strings.Split(round, " ")
-		p1, p2 := letterToPlay(plays[0]), letterToPlay(plays[1])
+		opponent, me := letterToPlay(plays[0]), letterToPlay(plays[1])
 
-		switch player {
-		case win_p1:
-			score += scoreForPlay(p1)
-		case win_p2:
-			score += scoreForPlay(p2)
-		}
+		score += scoreForPlay(me)
 
-		switch whoWon(p1, p2) {
-		case player:
+		switch whoWon(me, opponent) {
+		case win:
 			score += 6
 		case draw:
 			score += 3
@@ -117,4 +113,69 @@ func calculateScore(strategy string, player result) int {
 	}
 
 	return score
+}
+
+func letterToResult(l string) result {
+	switch l {
+	case "X":
+		return lose
+	case "Y":
+		return draw
+	case "Z":
+		return win
+	}
+	panic("unreachable")
+}
+
+func calculateScore2(strategy string) int {
+	rounds := strings.Split(strings.TrimSpace(strategy), "\n")
+
+	score := 0
+	for _, round := range rounds {
+		plays := strings.Split(round, " ")
+		opponent, want := letterToPlay(plays[0]), letterToResult(plays[1])
+
+		me := choosePlayForResult(opponent, want)
+		score += scoreForPlay(me)
+
+		switch whoWon(me, opponent) {
+		case win:
+			score += 6
+		case draw:
+			score += 3
+		}
+	}
+
+	return score
+}
+
+func choosePlayForResult(opponent play, want result) play {
+	if want == draw {
+		return opponent
+	}
+
+	switch opponent {
+	case rock:
+		switch want {
+		case win:
+			return paper
+		case lose:
+			return scissors
+		}
+	case paper:
+		switch want {
+		case win:
+			return scissors
+		case lose:
+			return rock
+		}
+	case scissors:
+		switch want {
+		case win:
+			return rock
+		case lose:
+			return paper
+		}
+	}
+	panic("unreachable")
 }
