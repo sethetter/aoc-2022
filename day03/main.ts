@@ -1,3 +1,8 @@
+import {
+  chunk,
+  intersection,
+} from "https://raw.githubusercontent.com/lodash/lodash/4.17.21-es/lodash.js";
+
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const valForLetter = (l: string): number => letters.indexOf(l) + 1;
 
@@ -20,9 +25,23 @@ export const findCommonItem = (s1: string, s2: string): string => {
 if (import.meta.main) {
   const input = await Deno.readTextFile("./input.txt");
   const lines = input.trim().split("\n");
+
   console.log(
+    "part 1:",
     lines.map(splitStr).map(([c1, c2]) => findCommonItem(c1, c2)).map(
       valForLetter,
     ).reduce((sum, x) => sum + x, 0),
+  );
+
+  console.log(
+    "part 2:",
+    chunk(lines, 3).map((
+      [e1, e2, e3],
+    ) => intersection(e1.split(""), e2.split(""), e3.split(""))).map(
+      (common) => {
+        if (common.length > 1) throw `found more than one match: ${common}`;
+        return common[0];
+      },
+    ).reduce((sum, x) => sum + valForLetter(x), 0),
   );
 }
