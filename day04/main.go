@@ -10,7 +10,8 @@ import (
 
 func main() {
 	input := h.GetInput("day04")
-	fmt.Printf("part 1: %d", part1(input))
+	fmt.Printf("part 1: %d\n", part1(input))
+	fmt.Printf("part 2: %d\n", part2(input))
 }
 
 // For each pair, how many fully contain the other?
@@ -19,7 +20,20 @@ func part1(input []byte) int {
 	count := 0
 	for _, line := range lines {
 		s1, s2 := parseLine(line)
-		if aContainsB(s1, s2) || aContainsB(s2, s1) {
+		if contains(s1, s2) || contains(s2, s1) {
+			count += 1
+		}
+	}
+	return count
+}
+
+// For each pair, how many fully contain the other?
+func part2(input []byte) int {
+	lines := bytes.Split(bytes.TrimSpace(input), []byte("\n"))
+	count := 0
+	for _, line := range lines {
+		s1, s2 := parseLine(line)
+		if overlaps(s1, s2) || overlaps(s2, s1) {
 			count += 1
 		}
 	}
@@ -45,6 +59,13 @@ func parseSection(in []byte) section {
 	return section{start, end}
 }
 
-func aContainsB(a, b section) bool {
+func contains(a, b section) bool {
 	return a[0] <= b[0] && a[1] >= b[1]
+}
+
+func overlaps(a, b section) bool {
+	b1 := a[1] >= b[0] && a[1] <= b[1]
+	b2 := a[0] <= b[1] && a[0] >= b[0]
+	return b1 || b2
+
 }
