@@ -18,7 +18,7 @@ func main() {
 
 	stacks.runInstructions(instructions)
 
-	fmt.Println(stacks)
+	fmt.Println(stacks.topBoxes())
 }
 
 type stacks [][]byte
@@ -39,6 +39,14 @@ func (s stacks) String() string {
 	return out
 }
 
+func (s stacks) topBoxes() string {
+	out := []byte{}
+	for _, stack := range s {
+		out = append(out, stack[len(stack)-1])
+	}
+	return string(out)
+}
+
 func (s stacks) loadLine(line []byte) {
 	numStacks := len(s)
 	for i := 1; i < numStacks+1; i++ {
@@ -57,9 +65,21 @@ func (s stacks) move(num, from, to int) {
 	}
 }
 
+func (s stacks) move2(num, from, to int) {
+	from, to = from-1, to-1
+
+	startIdx := len(s[from]) - num
+	if startIdx < 0 {
+		startIdx = 0
+	}
+
+	s[to] = append(s[to], s[from][startIdx:]...)
+	s[from] = s[from][:startIdx]
+}
+
 func (s stacks) runInstructions(instructions []instruction) {
 	for _, instruction := range instructions {
-		s.move(instruction[0], instruction[1], instruction[2])
+		s.move2(instruction[0], instruction[1], instruction[2])
 	}
 }
 
