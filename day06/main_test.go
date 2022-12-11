@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_startOfPacketIdx(t *testing.T) {
+func Test_part1(t *testing.T) {
 	cases := []struct {
 		in     []byte
 		expect int
@@ -17,6 +17,22 @@ func Test_startOfPacketIdx(t *testing.T) {
 		{[]byte("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"), 11},
 	}
 	for _, tc := range cases {
-		assert.Equal(t, tc.expect, startOfPacketIdx(tc.in))
+		assert.Equal(t, tc.expect, firstUniqCharBySize(tc.in, 4))
+	}
+}
+
+func Test_part2(t *testing.T) {
+	cases := []struct {
+		in     []byte
+		expect int
+	}{
+		{[]byte("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), 19},
+		{[]byte("bvwbjplbgvbhsrlpgdmjqwftvncz"), 23},
+		{[]byte("nppdvjthqldpwncqszvftbrmjlhg"), 23},
+		{[]byte("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"), 29},
+		{[]byte("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"), 26},
+	}
+	for _, tc := range cases {
+		assert.Equal(t, tc.expect, firstUniqCharBySize(tc.in, 14))
 	}
 }
